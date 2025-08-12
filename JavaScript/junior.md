@@ -101,13 +101,15 @@ console.log("Output 5 (===):", 5 === "5"); // Output 5 (===): false
 ```js
 console.log("\nExample 6");
 function createCounter() {
-  let count = 0;              // Переменная count доступна только внутри createCounter
+  let count = 0;         // Переменная count доступна только внутри createCounter
+
+  // Замыкание создаётся здесь — возвращаемая функция «помнит» переменную count
   return function() {
-    count++;                  // Внутренняя функция может изменять и использовать count
+    count++;             // Внутренняя функция изменяет и использует count из внешней функции
     return count;
   };
 }
-const counter = createCounter();
+const counter = createCounter(); // counter — функция с замыканием, сохранившая доступ к count
 console.log("Output 6 (call 1):", counter()); // Output 6 (call 1): 1
 console.log("Output 6 (call 2):", counter()); // Output 6 (call 2): 2
 ```
