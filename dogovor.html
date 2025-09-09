@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Договор 2025/0909 — редактор</title>
+  <style>
+    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; margin: 20px; background:#f6f7fb; color:#111; }
+    .container { display:flex; gap:20px; }
+    .editor { width: 420px; background:white; border:1px solid #e2e6ef; padding:16px; border-radius:8px; box-shadow:0 6px 18px rgba(15,20,40,0.04); }
+    .preview-wrap { flex:1; background:white; border:1px solid #e2e6ef; padding:20px; border-radius:8px; overflow:auto; max-height:90vh; }
+    h2 { margin:0 0 8px 0; font-size:18px; }
+    label { display:block; margin-top:10px; font-size:13px; color:#333; }
+    input[type="text"], textarea, select { width:100%; padding:8px 10px; margin-top:6px; border:1px solid #d7dbe8; border-radius:6px; font-size:14px; box-sizing:border-box; background:#fbfcff;}
+    textarea { min-height:60px; resize:vertical; }
+    .buttons { margin-top:14px; display:flex; gap:8px; }
+    button { padding:8px 12px; border-radius:6px; border:0; cursor:pointer; font-weight:600; }
+    button.primary { background:#2563eb; color:white; }
+    button.ghost { background:transparent; border:1px solid #cbd5e1; color:#111; }
+    .doc { font-size:14px; line-height:1.45; color:#111; }
+    .doc h1, .doc h3 { margin:8px 0; }
+    .signature { margin-top:28px; display:flex; gap:40px; align-items:flex-end; }
+    .sig-block { width:45%; }
+    .muted { color:#555; font-size:13px; }
+    .small { font-size:13px; color:#444; }
+    .field-inline { display:flex; gap:8px; align-items:center; }
+    .note { font-size:12px; color:#666; margin-top:6px; }
+    @media print {
+      body { background: white; }
+      .editor, .buttons { display:none; }
+      .preview-wrap { border: none; box-shadow:none; max-height:initial; }
+    }
+  </style>
+</head>
+<body>
+  <div style="display:flex; gap:16px; align-items:center; margin-bottom:12px;">
+    <h2>Редактор договора — № 2025/0909</h2>
+    <div class="note">Все даты договора установлены: <strong>09.09.2025</strong></div>
+  </div>
+
+  <div class="container">
+    <div class="editor" role="region" aria-label="Панель ввода данных">
+      <h3>Данные Заказчика</h3>
+
+      <label>Тип субъекта
+        <select id="client_type">
+          <option>Индивидуальный предприниматель</option>
+          <option>Юридическое лицо</option>
+          <option>Физическое лицо</option>
+        </select>
+      </label>
+
+      <label>ФИО / Наименование (Заказчик)
+        <input id="client_name" type="text" value="Фамилия Имя Отчество" />
+      </label>
+
+      <label>Представитель / ФИО (подпись)
+        <input id="client_rep" type="text" value="Фамилия И.О." />
+      </label>
+
+      <label>ИНН
+        <input id="client_inn" type="text" value="111222333444" />
+      </label>
+
+      <label>ОГРНИП / ОГРН
+        <input id="client_ogrn" type="text" value="111222333444555" />
+      </label>
+
+      <label>Расчётный счёт
+        <input id="client_account" type="text" value="11112222333344445555" />
+      </label>
+
+      <label>Банк
+        <input id="client_bank" type="text" value="ПАО Сбербанк" />
+      </label>
+
+      <label>Телефон
+        <input id="client_phone" type="text" value="+7 (999) 111-22-33" />
+      </label>
+
+      <label>E-mail
+        <input id="client_email" type="text" value="email@gmail.com" />
+      </label>
+
+      <hr style="margin:12px 0; border:none; border-top:1px solid #eef2ff;" />
+
+      <h3>Данные Исполнителя (фиксированы)</h3>
+
+      <label>ФИО
+        <input id="exec_name" type="text" value="Постольский Григорий Геннадьевич" />
+      </label>
+
+      <label>ИНН Исполнителя
+        <input id="exec_inn" type="text" value="312333227310" />
+      </label>
+
+      <label>Адрес Исполнителя
+        <input id="exec_address" type="text" value="г. Белгород, ул. Костюкова, дом 38 к4 кв. 167" />
+      </label>
+
+      <label>Паспорт
+        <input id="exec_passport" type="text" value="серия 1411 № 211288, выдан 19.10.2011 ОУФМС 1 г. Белгород" />
+      </label>
+
+      <label>Р/с Исполнителя
+        <input id="exec_account" type="text" value="40817810007005561821" />
+      </label>
+
+      <label>Телефон Исполнителя
+        <input id="exec_phone" type="text" value="+7 (919) 284-91-13" />
+      </label>
+
+      <label>E-mail Исполнителя
+        <input id="exec_email" type="text" value="gpostolskiy@gmail.com" />
+      </label>
+
+      <div class="buttons">
+        <button class="primary" id="applyBtn">Обновить превью</button>
+        <button class="ghost" id="fillSample">Заполнить пример</button>
+        <button class="ghost" id="printBtn">Печать / сохранить PDF</button>
+      </div>
+
+      <div style="margin-top:12px; font-size:12px; color:#555">
+        Подсказка: после редактирования нажмите «Обновить превью» или используйте автоматическое обновление.
+      </div>
+    </div>
+
+    <div class="preview-wrap" id="preview" role="region" aria-label="Превью договора">
+      <!-- Документ будет вставлен сюда JS -->
+    </div>
+  </div>
+
+  <script>
+    // Шаблон документа с плейсхолдерами
+    const template = ({client_type, client_name, client_rep, client_inn, client_ogrn, client_account, client_bank, client_phone, client_email,
+                       exec_name, exec_inn, exec_address, exec_passport, exec_account, exec_phone, exec_email}) => `
+      <div class="doc">
+        <div style="text-align:center;">
+          <h1>Договор возмездного оказания услуг № 2025/0909</h1>
+          <div class="small">г. Белгород</div>
+          <div class="small" style="margin-top:6px;">«09» сентября 2025 г.</div>
+        </div>
+
+        <p class="small">Индивидуальный предприниматель <strong>${escape(client_name)}</strong>, действующий на основании Свидетельства о государственной регистрации (ОГРНИП № ${escape(client_ogrn)}), именуемый в дальнейшем "<strong>Заказчик</strong>", с одной стороны, и <strong>${escape(exec_name)}</strong>, являющийся плательщиком налога на профессиональный доход (справка о постановке на учет № 88891523 от 09.09.2025, ИНН ${escape(exec_inn)}), ${escape(exec_passport)}, именуемый в дальнейшем "<strong>Исполнитель</strong>", с другой стороны, совместно именуемые "Стороны", заключили настоящий Договор о нижеследующем:</p>
+
+        <h3>1. Предмет Договора</h3>
+        <p>1.1. В соответствии с настоящим Договором Исполнитель обязуется оказать Заказчику услуги по разработке программного обеспечения в соответствии с требованиями, согласованными между Сторонами.</p>
+
+        <p>1.2. Стороны определяют, что официальный документооборот производится Заказчиком посредством e-mail: <strong>${escape(client_email)}</strong> и Исполнителем по e-mail: <strong>${escape(exec_email)}</strong>.</p>
+
+        <p>1.3. Перечень услуг, сроки и способы их оказания, а также вознаграждение Исполнителя определяются в Приложении № 1 к настоящему Договору (далее именуемом "Техническое задание").</p>
+        <p>1.4. Техническое задание на оказание услуг согласовывается исполнителем путем проставления подписи на титульном листе Технического задания.</p>
+        <p>1.5. По факту оказания услуг, Исполнителем подготавливается, подписывается и направляется Заказчику акт приема-сдачи оказанных услуг (далее по тексту «Акт»). В случае неподписания Заказчиком Акта в течение 5 (пяти) календарных дней с момента его направления, при отсутствии мотивированных письменных возражений, соответствующий Акт считается подписанным без замечаний. Форма Акта представлена в Приложении №2.</p>
+
+        <h3>2. Сроки и порядок оказания услуги</h3>
+        <p>2.1. Исполнитель обязуется:</p>
+        <p>2.1.1. Оказать услуги в срок 30 (тридцать) календарных дней с даты подписания настоящего договора.</p>
+        <p>2.2. Исполнитель имеет право:</p>
+        <p>2.2.1. Требовать своевременной оплаты оказанных услуг на основании подписанного Заказчиком и Исполнителем Акта выполненных работ, при условии отсутствия замечаний к выполненным работам.</p>
+        <p>2.3. Заказчик обязуется:</p>
+        <p>2.3.1. Оплатить выполненные работы в порядке, предусмотренном договором.</p>
+
+        <h3>3. Стоимость услуг и порядок оплаты</h3>
+        <p>3.1. Стоимость Услуг по Договору устанавливается Сторонами в размере 180 рублей за каждый полный час оказания Услуг.</p>
+        <p>3.2. Исполнитель в день окончания исполнения работ представляет Заказчику в двух экземплярах Акт.</p>
+        <p>3.3. Заказчик производит оплату Услуг в следующем порядке: в течение 5 (пяти) календарных дней с даты подписания Акта.</p>
+
+        <h3>4. Ответственность Сторон</h3>
+        <p>4.1. Исполнитель обязуется:</p>
+        <p>а) выполнять услуги добросовестно, в рамках согласованных требований;</p>
+        <p>б) соблюдать конфиденциальность информации, полученной от Заказчика;</p>
+        <p>в) предоставлять Заказчику отчет о выполнении работ.</p>
+
+        <p>4.2. Заказчик обязуется:</p>
+        <p>а) своевременно предоставлять Исполнителю необходимые материалы, информацию и доступы;</p>
+        <p>б) осуществлять контроль и принимать результаты оказанных услуг в сроки, согласованные между Сторонами;</p>
+        <p>в) оплачивать услуги Исполнителя в соответствии с условиями Договора;</p>
+        <p>г) рассматривать отчет и принимать решение о подписании Акта, в соответствии с согласованным Сторонами техническим заданием.</p>
+
+        <h3>5. Конфиденциальность</h3>
+        <p>5.1. Стороны обязуются не разглашать конфиденциальную информацию, полученную от другой Стороны, без предварительного письменного согласия другой Стороны, кроме случаев, предусмотренных действующим законодательством.</p>
+
+        <h3>6. Заключительные положения</h3>
+        <p>6.1. Стороны обязуются приложить все возможные усилия для создания благоприятных и взаимовыгодных условий сотрудничества по настоящему Договору.</p>
+        <p>6.2. Все споры, которые могут возникнуть из настоящего Договора или в связи с ним, Стороны будут пытаться решить путем взаимных переговоров и взаимных консультаций.</p>
+        <p>6.3. При недостижении согласия применяются установленные законом процедуры разрешения споров. В случае передачи спора на разрешение судебных органов, спор будет рассматриваться по месту нахождения Истца.</p>
+        <p>6.4. Настоящий Договор составлен в двух экземплярах, имеющих одинаковую юридическую силу, по одному экземпляру для каждой из Сторон.</p>
+
+        <h3>10. Адреса, реквизиты и подписи Сторон</h3>
+
+        <div style="display:flex; gap:24px;">
+          <div style="flex:1;">
+            <strong>Заказчик:</strong><br/>
+            ${escape(client_type)}<br/>
+            <strong>${escape(client_name)}</strong><br/>
+            ИНН: ${escape(client_inn)}<br/>
+            ОГРНИП: ${escape(client_ogrn)}<br/>
+            Расчётный счёт: ${escape(client_account)}<br/>
+            Наименование банка: ${escape(client_bank)}<br/>
+            Телефон: ${escape(client_phone)}<br/>
+            e-mail: ${escape(client_email)}<br/>
+            <div style="margin-top:18px;">_______________________ ${escape(client_rep)}</div>
+          </div>
+
+          <div style="flex:1;">
+            <strong>Исполнитель:</strong><br/>
+            <strong>${escape(exec_name)}</strong><br/>
+            Зарегистрирован по адресу: ${escape(exec_address)}<br/>
+            Паспортные данные: ${escape(exec_passport)}<br/>
+            Расчётный счёт: ${escape(exec_account)}<br/>
+            Наименование банка: ПАО Сбербанк<br/>
+            Телефон: ${escape(exec_phone)}<br/>
+            e-mail: ${escape(exec_email)}<br/>
+            <div style="margin-top:18px;">_______________________ Постольский Г.Г.</div>
+          </div>
+        </div>
+
+        <hr style="margin:20px 0;" />
+
+        <h3>Приложение №1 к договору 2025/0909 от 09.09.2025 — Техническое задание</h3>
+        <p>Провести рефакторинг проекта VR-квестов в среде разработки Unity. Составить техническую документацию разработчика и пользователя.</p>
+
+        <div style="display:flex; gap:40px; margin-top:20px;">
+          <div style="flex:1;">
+            <div class="muted">Заказчик:</div>
+            <div style="margin-top:36px;">_______________________ ${escape(client_rep)}</div>
+            <div class="muted">«09» сентября 2025 года</div>
+          </div>
+
+          <div style="flex:1;">
+            <div class="muted">Исполнитель:</div>
+            <div style="margin-top:36px;">_______________________ Постольский Г.Г.</div>
+            <div class="muted">«09» сентября 2025 года</div>
+          </div>
+        </div>
+
+        <hr style="margin:20px 0;" />
+
+        <h3>Приложение №2 к договору 2025/0909 от 09.09.2025 — Акт сдачи-приёмки оказанных услуг</h3>
+
+        <p class="small">город Белгород &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; «09» сентября 2025 года</p>
+
+        <p>Индивидуальный предприниматель <strong>${escape(client_name)}</strong>, именуемый в дальнейшем «Заказчик», с одной стороны, и <strong>${escape(exec_name)}</strong>, именуемый в дальнейшем «Исполнитель», с другой стороны, составили настоящий Акт о нижеследующем:</p>
+
+        <p>1. Исполнитель, в соответствии с условиями Договора № 2025/0909 от «09» сентября 2025 г., оказал Заказчику услуги, указанные в п.1.1. Договора, за период с 10 сентября по 10 октября 2025 года, полностью и в срок. Заказчик претензий по объёму, качеству и срокам оказания услуг не имеет.</p>
+
+        <p>2. Стоимость оказанных услуг составила 10 000 (десять тысяч) рублей 0 копеек.</p>
+
+        <p>3. Настоящий Акт составлен в двух экземплярах, имеющих одинаковую юридическую силу, по одному для каждой из Сторон.</p>
+
+        <div style="display:flex; gap:24px; margin-top:18px;">
+          <div style="flex:1;">
+            <strong>ИСПОЛНИТЕЛЬ:</strong><br/>
+            ${escape(exec_name)}<br/>
+            ${escape(exec_address)}<br/>
+            Паспорт: ${escape(exec_passport)}<br/>
+            Р/с: ${escape(exec_account)}<br/>
+            Телефон: ${escape(exec_phone)}<br/>
+            <div style="margin-top:18px;">______________________ Постольский Г.Г.</div>
+          </div>
+
+          <div style="flex:1;">
+            <strong>ЗАКАЗЧИК:</strong><br/>
+            ${escape(client_type)}<br/>
+            ${escape(client_name)}<br/>
+            ИНН: ${escape(client_inn)}<br/>
+            ОГРНИП: ${escape(client_ogrn)}<br/>
+            Р/с: ${escape(client_account)}<br/>
+            Телефон: ${escape(client_phone)}<br/>
+            <div style="margin-top:18px;">_______________________ ${escape(client_rep)}</div>
+          </div>
+        </div>
+
+      </div>
+    `;
+
+    // escape для безопасности вставки
+    function escape(s) {
+      if (!s && s !== 0) return '';
+      return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;');
+    }
+
+    function gatherFields() {
+      return {
+        client_type: document.getElementById('client_type').value,
+        client_name: document.getElementById('client_name').value,
+        client_rep: document.getElementById('client_rep').value,
+        client_inn: document.getElementById('client_inn').value,
+        client_ogrn: document.getElementById('client_ogrn').value,
+        client_account: document.getElementById('client_account').value,
+        client_bank: document.getElementById('client_bank').value,
+        client_phone: document.getElementById('client_phone').value,
+        client_email: document.getElementById('client_email').value,
+        exec_name: document.getElementById('exec_name').value,
+        exec_inn: document.getElementById('exec_inn').value,
+        exec_address: document.getElementById('exec_address').value,
+        exec_passport: document.getElementById('exec_passport').value,
+        exec_account: document.getElementById('exec_account').value,
+        exec_phone: document.getElementById('exec_phone').value,
+        exec_email: document.getElementById('exec_email').value
+      };
+    }
+
+    function render() {
+      const html = template(gatherFields());
+      document.getElementById('preview').innerHTML = html;
+    }
+
+    // События
+    document.getElementById('applyBtn').addEventListener('click', render);
+    document.getElementById('printBtn').addEventListener('click', () => window.print());
+    document.getElementById('fillSample').addEventListener('click', () => {
+      document.getElementById('client_type').value = 'Индивидуальный предприниматель';
+      document.getElementById('client_name').value = 'Индивидуальный предприниматель Фамилия Имя Отчество';
+      document.getElementById('client_rep').value = 'Фамилия И.О.';
+      document.getElementById('client_inn').value = '111222333444';
+      document.getElementById('client_ogrn').value = '111222333444555';
+      document.getElementById('client_account').value = '11112222333344445555';
+      document.getElementById('client_bank').value = 'ПАО Сбербанк';
+      document.getElementById('client_phone').value = '+7 (999) 111-22-33';
+      document.getElementById('client_email').value = 'email@gmail.com';
+      render();
+    });
+
+    // Авто-рендер при изменениях (не навязчиво)
+    const inputs = document.querySelectorAll('input, select, textarea');
+    inputs.forEach(i => {
+      i.addEventListener('input', () => {
+        clearTimeout(i._t);
+        i._t = setTimeout(render, 350);
+      });
+    });
+
+    // Инициализация
+    render();
+  </script>
+</body>
+</html>
