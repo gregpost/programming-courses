@@ -1,39 +1,35 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <title>Симуляция ткани PBD (WebGPU + паттерны)</title>
+  <meta charset="UTF-8">
+  <title>WebGPU Cloth Simulation</title>
   <style>
-    html, body {
-      margin: 0;
-      height: 100%;
-      background: #101010;
-      color: white;
-      font-family: sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-    canvas {
-      border: 1px solid #444;
-      width: 800px;
-      height: 800px;
-    }
-    #ui {
-      margin-top: 10px;
-    }
+    body { margin: 0; background: #111; color: #fff; font-family: sans-serif; }
+    canvas { display: block; margin: auto; border: 1px solid #444; }
+    #ui { text-align: center; margin: 10px; }
   </style>
 </head>
 <body>
-  <canvas id="canvas" width="800" height="800"></canvas>
   <div id="ui">
-    <label><input type="checkbox" id="gravity" checked> Включить гравитацию</label>
-    <select id="strategy">
-      <option value="pbd">Position Based Dynamics</option>
-      <option value="mass">Mass-Spring</option>
-    </select>
+    <label><input type="checkbox" id="gravity" checked> Gravity</label>
+    <label>
+      Strategy:
+      <select id="strategy">
+        <option value="pbd">PBD</option>
+        <option value="massspring">Mass-Spring</option>
+      </select>
+    </label>
   </div>
-  <script type="module" src="main.js"></script>
+  <canvas id="canvas" width="640" height="480"></canvas>
+
+  <script type="module">
+    import { initSimulation } from "./main.js";
+
+    const canvas = document.getElementById("canvas");
+    const gravityEl = document.getElementById("gravity");
+    const strategyEl = document.getElementById("strategy");
+
+    initSimulation(canvas, gravityEl, strategyEl);
+  </script>
 </body>
 </html>
