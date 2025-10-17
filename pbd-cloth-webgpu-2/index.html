@@ -3,11 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>WebGPU Cloth Simulation</title>
-  <style>
-    body { margin: 0; background: #111; color: #fff; font-family: sans-serif; }
-    canvas { display: block; margin: auto; border: 1px solid #444; }
-    #ui { text-align: center; margin: 10px; }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div id="ui">
@@ -23,7 +19,7 @@
   <canvas id="canvas" width="640" height="480"></canvas>
 
   <script type="module">
-    import { initSimulation } from "./main.js";
+    import { initSimulation } from "./js/main.js";
 
     const canvas = document.getElementById("canvas");
     const gravityEl = document.getElementById("gravity");
