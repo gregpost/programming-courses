@@ -27,16 +27,17 @@
     import { initSimulation } from "./js/main.js";
     import { setupErrorHandler } from "./js/error_handler.js";
 
-    // Получаем элементы UI
-    const canvas = document.getElementById("canvas");
-    const gravityEl = document.getElementById("gravity");
-    const strategyEl = document.getElementById("strategy");
+    window.addEventListener("DOMContentLoaded", () => {
+      const canvas = document.getElementById("canvas");
+      const gravityEl = document.getElementById("gravity");
+      const strategyEl = document.getElementById("strategy");
 
-    // Устанавливаем глобальный обработчик ошибок
-    setupErrorHandler("error-log");
+      // Устанавливаем глобальный обработчик ошибок
+      setupErrorHandler("error-log");
 
-    // Инициализация симуляции
-    initSimulation(canvas, gravityEl, strategyEl);
+      // Инициализация симуляции
+      initSimulation(canvas, gravityEl, strategyEl);
+    });
   </script>
 </body>
 </html>
