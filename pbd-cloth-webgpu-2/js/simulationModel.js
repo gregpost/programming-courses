@@ -1,4 +1,9 @@
-// simulationModel.js
+/**
+ * simulationModel.js
+ * Модель MVC для симуляции ткани.
+ * Хранит текущее состояние, стратегию и флаги.
+ * Использует Observable для уведомления View о изменениях.
+ */
 import { Observable } from "./observable.js";
 
 export class SimulationModel extends Observable {
