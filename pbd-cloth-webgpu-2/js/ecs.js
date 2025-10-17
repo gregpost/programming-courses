@@ -1,4 +1,10 @@
-// ecs.js
+/**
+ * ecs.js
+ * ECS (Entity-Component-System) для симуляции.
+ * Entity хранит компоненты, System обновляет сущности.
+ * Пример системы: GravitySystem.
+ * Позволяет добавлять новые физические эффекты без изменения существующего кода.
+ */
 export class Entity {
   constructor(components = {}) { this.components = components; }
   get(c) { return this.components[c]; }
