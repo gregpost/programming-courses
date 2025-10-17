@@ -1,4 +1,10 @@
-// gpuManager.js
+/**
+ * gpuManager.js
+ * Singleton для работы с WebGPU.
+ * Отвечает за инициализацию устройства GPU, контекста Canvas и формата.
+ * Использует метод getInstance() для единственного доступа к устройству.
+ * Применяет паттерн Singleton.
+ */
 export class GPUManager {
   static instance;
   static async getInstance(canvas) {
