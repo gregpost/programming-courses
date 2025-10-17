@@ -176,14 +176,14 @@ async function buildPipelines(format) {
 const wgslCode = `
 // WGSL for PBD cloth (compute) and simple render shaders
 struct Uniforms {
-  time: f32;
-  dt: f32;
-  edgeCount: u32;
-  driveIndex: u32;
-  amp: f32;
-  freq: f32;
-  gravityOn: u32;
-  iter: u32;
+  time: f32,
+  dt: f32,
+  edgeCount: u32,
+  driveIndex: u32,
+  amp: f32,
+  freq: f32,
+  gravityOn: u32,
+  iter: u32,
 };
 @group(0) @binding(0) var<storage, read_write> positions: array<vec3<f32>>;
 @group(0) @binding(1) var<storage, read_write> prevPositions: array<vec3<f32>>;
@@ -252,7 +252,7 @@ fn posInitial(index: u32) -> vec3<f32> {
 }
 
 // Render shaders
-struct VSOut { @builtin(position) pos : vec4<f32>; @location(0) color : vec4<f32>; };
+struct VSOut { @builtin(position) pos : vec4<f32>, @location(0) color : vec4<f32>, };
 
 @vertex
 fn vs_render(@location(0) inPos : vec3<f32>) -> VSOut {
