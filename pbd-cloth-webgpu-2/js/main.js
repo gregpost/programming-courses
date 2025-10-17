@@ -12,7 +12,7 @@ import { SimulationModel } from "./simulationModel.js";
 import { SimulationView } from "./simulationView.js";
 import { SimulationController } from "./simulationController.js";
 
-// Функция для загрузки WGSL-шейдера
+// Функция для загрузки WGSL-шейдера через fetch
 async function loadShader(path) {
   const res = await fetch(path);
   if (!res.ok) throw new Error(`Failed to load shader: ${path}`);
@@ -34,7 +34,7 @@ export async function initSimulation(canvas, gravityEl, strategyEl) {
 
   const gpu = await GPUManager.getInstance(canvas);
 
-  // Передаём шейдеры в стратегии и фабрики
+  // Создаём стратегии с загруженными шейдерами
   const pbdStrategy = new PBDStrategy(clothUpdatePBD);
   const massSpringStrategy = new MassSpringStrategy(clothUpdateMassSpring);
 
