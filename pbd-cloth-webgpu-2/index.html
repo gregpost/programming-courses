@@ -16,22 +16,26 @@
       </select>
     </label>
   </div>
+
   <canvas id="canvas" width="640" height="480"></canvas>
 
   <!-- Контейнер для вывода JS ошибок -->
   <div id="error-log" style="color:red; white-space: pre-wrap; font-family: monospace;"></div>
 
+  <!-- Основной скрипт -->
   <script type="module">
     import { initSimulation } from "./js/main.js";
     import { setupErrorHandler } from "./js/error_handler.js";
 
+    // Получаем элементы UI
     const canvas = document.getElementById("canvas");
     const gravityEl = document.getElementById("gravity");
     const strategyEl = document.getElementById("strategy");
 
-    // Устанавливаем обработчик ошибок
+    // Устанавливаем глобальный обработчик ошибок
     setupErrorHandler("error-log");
 
+    // Инициализация симуляции
     initSimulation(canvas, gravityEl, strategyEl);
   </script>
 </body>
