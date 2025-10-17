@@ -20,20 +20,48 @@
   <canvas id="canvas" width="640" height="480"></canvas>
 
   <!-- Контейнер для вывода JS ошибок -->
-  <div id="error-log" style="color:red; white-space: pre-wrap; font-family: monospace;"></div>
+  <div id="error-log" style="color:red; white-space: pre-wrap; font-family: monospace; margin-top:10px;"></div>
+  <button id="save-log" style="margin-top:5px;">Save JS Log</button>
 
   <script type="module">
     import { initSimulation } from "./js/main.js";
     import { setupErrorHandler } from "./js/error_handler.js";
 
-    // Инициализация после полной загрузки DOM
     window.addEventListener("DOMContentLoaded", () => {
       const canvas = document.getElementById("canvas");
       const gravityEl = document.getElementById("gravity");
       const strategyEl = document.getElementById("strategy");
+      const errorLogEl = document.getElementById("error-log");
+      const saveLogBtn = document.getElementById("save-log");
 
+      // Настройка глобального обработчика ошибок
       setupErrorHandler("error-log");
 
+      // Логирование глобальных JS ошибок
+      window.addEventListener("error", e => {
+        const msg = `Error: ${e.message} at ${e.filename}:${e.lineno}:${e.colno}`;
+        console.error(msg);
+        errorLogEl.textContent += msg + "\n";
+      });
+
+      window.addEventListener("unhandledrejection", e => {
+        const msg = `Unhandled Promise rejection: ${e.reason}`;
+        console.error(msg);
+        errorLogEl.textContent += msg + "\n";
+      });
+
+      // Кнопка для сохранения лога в файл
+      saveLogBtn.addEventListener("click", () => {
+        const blob = new Blob([errorLogEl.textContent], {type: 'text/plain'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'js_errors.log';
+        a.click();
+        URL.revokeObjectURL(url);
+      });
+
+      // Инициализация симуляции
       initSimulation(canvas, gravityEl, strategyEl);
     });
   </script>
