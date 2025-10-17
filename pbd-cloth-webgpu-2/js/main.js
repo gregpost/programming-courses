@@ -5,11 +5,15 @@
    Date: 2025
 */
 
+import { setupErrorHandler } from "./error_handler.js";
 import { GPUManager } from "./gpuManager.js";
 import { PBDStrategy, MassSpringStrategy } from "./strategies.js";
 import { SimulationModel } from "./simulationModel.js";
 import { SimulationView } from "./simulationView.js";
 import { SimulationController } from "./simulationController.js";
+
+// Настройка глобального вывода ошибок на страницу
+setupErrorHandler();
 
 export async function initSimulation(canvas, gravityEl, strategyEl) {
   if (!navigator.gpu) {
