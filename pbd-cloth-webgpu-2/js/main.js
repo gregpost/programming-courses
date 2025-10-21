@@ -26,11 +26,11 @@ export async function initSimulation(canvas, gravityEl, strategyEl) {
   }
 
   // Загружаем шейдеры
-  const [clothUpdatePBD, clothUpdateMassSpring, clothRenderWGSL] = await Promise.all([
-    loadShader("./shaders/cloth_update_pbd.wgsl"),
-    loadShader("./shaders/cloth_update_massspring.wgsl"),
-    loadShader("./shaders/cloth_render.wgsl"),
-  ]);
+ // const [clothUpdatePBD, clothUpdateMassSpring, clothRenderWGSL] = await Promise.all([
+ //   loadShader("./shaders/cloth_update_pbd.wgsl"),
+ //   loadShader("./shaders/cloth_update_massspring.wgsl"),
+ //   loadShader("./shaders/cloth_render.wgsl"),
+ // ]);
 
   const gpu = await GPUManager.getInstance(canvas);
 
