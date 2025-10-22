@@ -196,7 +196,7 @@ export class SimulationView {
     try {
       console.log(`[SimulationView.renderFrame] Getting current texture...`);
       const texture = this.context.getCurrentTexture();
-      console.log(`[SimulationView.renderFrame] Texture obtained:`, texture ? 'yes' : 'no`);
+      console.log(`[SimulationView.renderFrame] Texture obtained:`, texture ? 'yes' : 'no');
       
       console.log(`[SimulationView.renderFrame] Creating command encoder...`);
       const encoder = this.device.createCommandEncoder();
