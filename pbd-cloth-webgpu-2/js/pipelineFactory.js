@@ -5,9 +5,14 @@
  * Позволяет легко переключать шейдеры и формат канвы.
  * Применяет паттерн Factory.
  */
-import clothRenderWGSL from "../shaders/cloth_render.wgsl?raw";
 
 export class PipelineFactory {
+  static async loadShaderModule(device, url) {
+    const response = await fetch(url);
+    const code = await response.text();
+    return device.createShaderModule({ code });
+  }
+
   static createComputePipeline(device, shaderCode) {
     return device.createComputePipeline({
       layout: "auto",
@@ -15,8 +20,8 @@ export class PipelineFactory {
     });
   }
 
-  static createRenderPipeline(device, format) {
-    const module = device.createShaderModule({ code: clothRenderWGSL });
+  static async createRenderPipeline(device, format) {
+    const module = await PipelineFactory.loadShaderModule(device, "./shaders/cloth_render.wgsl");
     return device.createRenderPipeline({
       layout: "auto",
       vertex: {
