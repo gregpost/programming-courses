@@ -71,38 +71,52 @@ export class PipelineFactory {
   static async createRenderPipeline(device, format) {
     console.log(`[PipelineFactory.createRenderPipeline] Creating render pipeline with format: ${format}`);
     
-    console.log(`[PipelineFactory.createRenderPipeline] Loading shader module`);
-    const module = await PipelineFactory.loadShaderModule(device, "./shaders/cloth_render.wgsl");
-    console.log(`[PipelineFactory.createRenderPipeline] Shader module loaded`);
-    
-    console.log(`[PipelineFactory.createRenderPipeline] Setting up render pipeline descriptor`);
-    const pipelineDescriptor = {
-      layout: "auto",
-      vertex: {
-        module,
-        entryPoint: "vs_main",
-        buffers: [
-          { 
-            arrayStride: 16, 
-            attributes: [
-              { shaderLocation: 0, offset: 0, format: "float32x3" }, 
-              { shaderLocation: 1, offset: 12, format: "float32" }
-            ] 
-          },
-        ],
-      },
-      fragment: { 
-        module, 
-        entryPoint: "fs_main", 
-        targets: [{ format }] 
-      },
-      primitive: { topology: "triangle-list" },
-    };
-    
-    console.log(`[PipelineFactory.createRenderPipeline] Creating render pipeline`);
-    const pipeline = device.createRenderPipeline(pipelineDescriptor);
-    console.log(`[PipelineFactory.createRenderPipeline] Render pipeline created successfully`);
-    
-    return pipeline;
+    try {
+      console.log(`[PipelineFactory.createRenderPipeline] Loading shader module for render pipeline`);
+      const module = await PipelineFactory.loadShaderModule(device, "./shaders/cloth_render.wgsl");
+      console.log(`[PipelineFactory.createRenderPipeline] Shader module loaded successfully`);
+      
+      console.log(`[PipelineFactory.createRenderPipeline] Setting up render pipeline descriptor`);
+      const pipelineDescriptor = {
+        layout: "auto",
+        vertex: {
+          module,
+          entryPoint: "vs_main",
+          buffers: [
+            { 
+              arrayStride: 16, 
+              attributes: [
+                { shaderLocation: 0, offset: 0, format: "float32x3" }, 
+                { shaderLocation: 1, offset: 12, format: "float32" }
+              ] 
+            },
+          ],
+        },
+        fragment: { 
+          module, 
+          entryPoint: "fs_main", 
+          targets: [{ format }] 
+        },
+        primitive: { topology: "triangle-list" },
+      };
+      
+      console.log(`[PipelineFactory.createRenderPipeline] Creating render pipeline...`);
+      const pipeline = device.createRenderPipeline(pipelineDescriptor);
+      
+      // Check for pipeline compilation errors
+      pipeline.compilationInfo?.()?.then((info) => {
+        if (info.messages.length > 0) {
+          console.error(`[PipelineFactory.createRenderPipeline] Pipeline compilation messages:`, info.messages);
+        } else {
+          console.log(`[PipelineFactory.createRenderPipeline] Render pipeline compiled successfully`);
+        }
+      });
+      
+      console.log(`[PipelineFactory.createRenderPipeline] Render pipeline created successfully`);
+      return pipeline;
+    } catch (error) {
+      console.error(`[PipelineFactory.createRenderPipeline] Error creating render pipeline:`, error);
+      throw error;
+    }
   }
 }
