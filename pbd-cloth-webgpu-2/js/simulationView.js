@@ -47,17 +47,45 @@ export class SimulationView {
   }
 
   initBuffers() {
-    console.log(`[SimulationView.initBuffers] Initializing GPU buffers`);
+    console.log(`[SimulationView.initBuffers] Starting buffer initialization`);
     console.log(`[SimulationView.initBuffers] Cloth size: ${this.clothSize}, spacing: ${this.spacing}`);
-    // инициализация posBuffers, paramBuffer и indexBuffer
-    console.log(`[SimulationView.initBuffers] GPU buffers initialized`);
+    
+    try {
+      // Add detailed logging for each buffer creation
+      console.log(`[SimulationView.initBuffers] Creating position buffers...`);
+      // your posBuffers creation code
+      console.log(`[SimulationView.initBuffers] Position buffers created`);
+      
+      console.log(`[SimulationView.initBuffers] Creating parameter buffer...`);
+      // your paramBuffer creation code
+      console.log(`[SimulationView.initBuffers] Parameter buffer created`);
+      
+      console.log(`[SimulationView.initBuffers] Creating index buffer...`);
+      // your indexBuffer creation code
+      console.log(`[SimulationView.initBuffers] Index buffer created`);
+      
+      console.log(`[SimulationView.initBuffers] All buffers initialized successfully`);
+    } catch (error) {
+      console.error(`[SimulationView.initBuffers] Error initializing buffers:`, error);
+    }
   }
 
   createCompute() {
     console.log(`[SimulationView.createCompute] Creating compute pipeline`);
     console.log(`[SimulationView.createCompute] Current strategy:`, this.model.strategy?.constructor?.name || 'null');
-    // создание compute пайплайна
-    console.log(`[SimulationView.createCompute] Compute pipeline created successfully`);
+    
+    try {
+      if (!this.model.strategy) {
+        console.error(`[SimulationView.createCompute] No strategy set!`);
+        return;
+      }
+      
+      console.log(`[SimulationView.createCompute] Strategy shader length:`, this.model.strategy.shader?.length || 0);
+      this.computePipeline = this.model.strategy.createPipeline(this.device);
+      console.log(`[SimulationView.createCompute] Compute pipeline created successfully`);
+    } catch (error) {
+      console.error(`[SimulationView.createCompute] Error creating compute pipeline:`, error);
+    }
   }
 
   updateParams(time = 0) {
@@ -69,8 +97,34 @@ export class SimulationView {
 
   renderFrame(frameCount) {
     console.log(`[SimulationView.renderFrame] Rendering frame ${frameCount}`);
+    
     try {
-      // рендеринг кадра
+      // Add detailed logging for each render step
+      console.log(`[SimulationView.renderFrame] Getting current texture...`);
+      const texture = this.context.getCurrentTexture();
+      console.log(`[SimulationView.renderFrame] Texture obtained:`, texture ? 'yes' : 'no');
+      
+      console.log(`[SimulationView.renderFrame] Creating command encoder...`);
+      const encoder = this.device.createCommandEncoder();
+      console.log(`[SimulationView.renderFrame] Command encoder created`);
+      
+      // Add compute pass logging
+      if (this.computePipeline) {
+        console.log(`[SimulationView.renderFrame] Starting compute pass...`);
+        // your compute pass code
+        console.log(`[SimulationView.renderFrame] Compute pass completed`);
+      } else {
+        console.warn(`[SimulationView.renderFrame] No compute pipeline available!`);
+      }
+      
+      console.log(`[SimulationView.renderFrame] Starting render pass...`);
+      // your render pass code
+      console.log(`[SimulationView.renderFrame] Render pass completed`);
+      
+      console.log(`[SimulationView.renderFrame] Submitting commands...`);
+      this.device.queue.submit([encoder.finish()]);
+      console.log(`[SimulationView.renderFrame] Commands submitted`);
+      
       console.log(`[SimulationView.renderFrame] Frame ${frameCount} rendered successfully`);
     } catch (error) {
       console.error(`[SimulationView.renderFrame] Error rendering frame ${frameCount}:`, error);

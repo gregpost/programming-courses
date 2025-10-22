@@ -29,26 +29,43 @@ export class PipelineFactory {
 
   static createComputePipeline(device, shaderCode) {
     console.log(`[PipelineFactory.createComputePipeline] Creating compute pipeline`);
-    console.log(`[PipelineFactory.createComputePipeline] Shader code length: ${shaderCode.length} characters`);
+    console.log(`[PipelineFactory.createComputePipeline] Shader code length: ${shaderCode?.length || 0}`);
     
-    console.log(`[PipelineFactory.createComputePipeline] Creating shader module`);
-    const shaderModule = device.createShaderModule({ code: shaderCode });
-    console.log(`[PipelineFactory.createComputePipeline] Shader module created`);
-    
-    console.log(`[PipelineFactory.createComputePipeline] Setting up compute pipeline descriptor`);
-    const pipelineDescriptor = {
-      layout: "auto",
-      compute: { 
-        module: shaderModule, 
-        entryPoint: "main" 
-      },
-    };
-    
-    console.log(`[PipelineFactory.createComputePipeline] Creating compute pipeline`);
-    const pipeline = device.createComputePipeline(pipelineDescriptor);
-    console.log(`[PipelineFactory.createComputePipeline] Compute pipeline created successfully`);
-    
-    return pipeline;
+    try {
+      console.log(`[PipelineFactory.createComputePipeline] Creating shader module...`);
+      const shaderModule = device.createShaderModule({ 
+        code: shaderCode,
+        // Add validation for better error messages
+        // label: "Compute Shader Module"
+      });
+      
+      // Check for shader compilation errors
+      shaderModule.compilationInfo().then((info) => {
+        if (info.messages.length > 0) {
+          console.error(`[PipelineFactory.createComputePipeline] Shader compilation messages:`, info.messages);
+        } else {
+          console.log(`[PipelineFactory.createComputePipeline] Shader compiled successfully`);
+        }
+      });
+      
+      console.log(`[PipelineFactory.createComputePipeline] Setting up pipeline descriptor...`);
+      const pipelineDescriptor = {
+        layout: "auto",
+        compute: { 
+          module: shaderModule, 
+          entryPoint: "main" 
+        },
+      };
+      
+      console.log(`[PipelineFactory.createComputePipeline] Creating pipeline...`);
+      const pipeline = device.createComputePipeline(pipelineDescriptor);
+      console.log(`[PipelineFactory.createComputePipeline] Compute pipeline created successfully`);
+      
+      return pipeline;
+    } catch (error) {
+      console.error(`[PipelineFactory.createComputePipeline] Error creating pipeline:`, error);
+      throw error;
+    }
   }
 
   static async createRenderPipeline(device, format) {
