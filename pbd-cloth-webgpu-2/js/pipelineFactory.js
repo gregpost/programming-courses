@@ -5,7 +5,7 @@
  * Позволяет легко переключать шейдеры и формат канвы.
  * Применяет паттерн Factory.
  */
-import clothRenderWGSL from "../shaders/cloth_render.wgsl";
+import clothRenderWGSL from "../shaders/cloth_render.wgsl?raw";
 
 export class PipelineFactory {
   static createComputePipeline(device, shaderCode) {
