@@ -7,20 +7,64 @@
  */
 export class GPUManager {
   static instance;
+  
   static async getInstance(canvas) {
+    console.log(`[GPUManager.getInstance] Requesting GPUManager instance`);
+    
     if (!GPUManager.instance) {
+      console.log(`[GPUManager.getInstance] No instance exists, creating new one`);
+      
+      console.log(`[GPUManager.getInstance] Requesting GPU adapter`);
       const adapter = await navigator.gpu.requestAdapter();
+      if (!adapter) {
+        console.error(`[GPUManager.getInstance] Failed to get GPU adapter`);
+        throw new Error("Failed to get GPU adapter");
+      }
+      console.log(`[GPUManager.getInstance] GPU adapter obtained`);
+      
+      console.log(`[GPUManager.getInstance] Requesting GPU device`);
       const device = await adapter.requestDevice();
+      if (!device) {
+        console.error(`[GPUManager.getInstance] Failed to get GPU device`);
+        throw new Error("Failed to get GPU device");
+      }
+      console.log(`[GPUManager.getInstance] GPU device obtained`);
+      
+      console.log(`[GPUManager.getInstance] Getting WebGPU context from canvas`);
       const context = canvas.getContext("webgpu");
+      if (!context) {
+        console.error(`[GPUManager.getInstance] Failed to get WebGPU context`);
+        throw new Error("Failed to get WebGPU context");
+      }
+      console.log(`[GPUManager.getInstance] WebGPU context obtained`);
+      
+      console.log(`[GPUManager.getInstance] Getting preferred canvas format`);
       const format = navigator.gpu.getPreferredCanvasFormat();
+      console.log(`[GPUManager.getInstance] Preferred format: ${format}`);
+      
+      console.log(`[GPUManager.getInstance] Configuring context with device and format`);
       context.configure({ device, format, alphaMode: "opaque" });
+      console.log(`[GPUManager.getInstance] Context configured successfully`);
+      
+      console.log(`[GPUManager.getInstance] Creating new GPUManager instance`);
       GPUManager.instance = new GPUManager(device, context, format);
+      console.log(`[GPUManager.getInstance] GPUManager instance created successfully`);
+    } else {
+      console.log(`[GPUManager.getInstance] Returning existing GPUManager instance`);
     }
+    
     return GPUManager.instance;
   }
+  
   constructor(device, context, format) {
+    console.log(`[GPUManager.constructor] Initializing GPUManager with:`, {
+      device: !!device,
+      context: !!context,
+      format: format
+    });
     this.device = device;
     this.context = context;
     this.format = format;
+    console.log(`[GPUManager.constructor] GPUManager initialized successfully`);
   }
 }
