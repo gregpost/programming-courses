@@ -28,7 +28,14 @@ export class SimulationView {
     
     console.log(`[SimulationView.constructor] Creating render pipeline`);
     this.renderPipeline = PipelineFactory.createRenderPipeline(device, format);
-    console.log(`[SimulationView.constructor] Render pipeline created`);
+    console.log(`[SimulationView.constructor] Render pipeline created:`, this.renderPipeline);
+    console.log(`[SimulationView.constructor] Render pipeline type:`, typeof this.renderPipeline);
+    
+    if (!this.renderPipeline) {
+      console.error(`[SimulationView.constructor] CRITICAL: Render pipeline creation failed!`);
+    } else {
+      console.log(`[SimulationView.constructor] Render pipeline is valid`);
+    }
     
     console.log(`[SimulationView.constructor] Subscribing to model events`);
     this.model.on("strategyChanged", () => {
@@ -157,7 +164,13 @@ export class SimulationView {
       
       console.log(`[SimulationView.createCompute] Strategy shader length:`, this.model.strategy.shader?.length || 0);
       this.computePipeline = this.model.strategy.createPipeline(this.device);
-      console.log(`[SimulationView.createCompute] Compute pipeline created successfully`);
+      console.log(`[SimulationView.createCompute] Compute pipeline created:`, this.computePipeline);
+      
+      if (!this.computePipeline) {
+        console.error(`[SimulationView.createCompute] Compute pipeline creation failed!`);
+      } else {
+        console.log(`[SimulationView.createCompute] Compute pipeline created successfully`);
+      }
     } catch (error) {
       console.error(`[SimulationView.createCompute] Error creating compute pipeline:`, error);
     }
@@ -172,11 +185,18 @@ export class SimulationView {
 
   renderFrame(frameCount) {
     console.log(`[SimulationView.renderFrame] Rendering frame ${frameCount}`);
+    console.log(`[SimulationView.renderFrame] Render pipeline:`, this.renderPipeline);
+    
+    // Critical check: skip rendering if pipeline is invalid
+    if (!this.renderPipeline) {
+      console.error(`[SimulationView.renderFrame] CRITICAL: Render pipeline is null/undefined! Skipping frame.`);
+      return;
+    }
     
     try {
       console.log(`[SimulationView.renderFrame] Getting current texture...`);
       const texture = this.context.getCurrentTexture();
-      console.log(`[SimulationView.renderFrame] Texture obtained:`, texture ? 'yes' : 'no');
+      console.log(`[SimulationView.renderFrame] Texture obtained:`, texture ? 'yes' : 'no`);
       
       console.log(`[SimulationView.renderFrame] Creating command encoder...`);
       const encoder = this.device.createCommandEncoder();
