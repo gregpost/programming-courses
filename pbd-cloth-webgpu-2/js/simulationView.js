@@ -187,7 +187,7 @@ export class SimulationView {
     console.log(`[SimulationView.renderFrame] Rendering frame ${frameCount}`);
     console.log(`[SimulationView.renderFrame] Render pipeline:`, this.renderPipeline);
     
-    // Critical check: skip rendering if pipeline is invalid
+    // Critical check: skip rendering if pipeline is invalid - MUST BE FIRST!
     if (!this.renderPipeline) {
       console.error(`[SimulationView.renderFrame] CRITICAL: Render pipeline is null/undefined! Skipping frame.`);
       return;
@@ -226,7 +226,7 @@ export class SimulationView {
       });
       
       console.log(`[SimulationView.renderFrame] Setting render pipeline...`);
-      renderPass.setPipeline(this.renderPipeline);
+      renderPass.setPipeline(this.renderPipeline); // This is line 229 where the error occurs
       
       console.log(`[SimulationView.renderFrame] Setting vertex buffer 0...`);
       renderPass.setVertexBuffer(0, this.posBuffers[0]);
