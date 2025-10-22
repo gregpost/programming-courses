@@ -7,21 +7,20 @@
 import { Observable } from "./observable.js";
 
 export class SimulationModel extends Observable {
-  constructor(device, format) {
-    console.log(`[SimulationModel.constructor] Creating SimulationModel`);
+  constructor(device, format, strategy = null) {  // ← Make strategy optional with default
     super();
-    console.log(`[SimulationModel.constructor] Observable base class initialized`);
+    console.log(`[SimulationModel.constructor] Creating SimulationModel`);
     
     this.device = device;
     this.format = format;
-    this.strategy = null;
+    this.strategy = strategy;  // ← This was missing!
     this.gravityEnabled = true;
     this.entities = [];
     
     console.log(`[SimulationModel.constructor] SimulationModel initialized with:`, {
       device: device ? 'provided' : 'missing',
       format: format,
-      strategy: this.strategy ? 'set' : 'null',
+      strategy: this.strategy ? this.strategy.constructor.name : 'null', // ← Log strategy name
       gravityEnabled: this.gravityEnabled,
       entitiesCount: this.entities.length
     });

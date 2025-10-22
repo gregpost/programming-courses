@@ -34,19 +34,24 @@ export class PipelineFactory {
     try {
       console.log(`[PipelineFactory.createComputePipeline] Creating shader module...`);
       const shaderModule = device.createShaderModule({ 
-        code: shaderCode,
-        // Add validation for better error messages
-        // label: "Compute Shader Module"
+        code: shaderCode
       });
       
-      // Check for shader compilation errors
-      shaderModule.compilationInfo().then((info) => {
-        if (info.messages.length > 0) {
-          console.error(`[PipelineFactory.createComputePipeline] Shader compilation messages:`, info.messages);
-        } else {
-          console.log(`[PipelineFactory.createComputePipeline] Shader compiled successfully`);
-        }
-      });
+      // FIX: Check if compilationInfo exists before calling it
+      if (shaderModule.compilationInfo) {
+        console.log(`[PipelineFactory.createComputePipeline] Checking shader compilation...`);
+        shaderModule.compilationInfo().then((info) => {
+          if (info.messages.length > 0) {
+            console.warn(`[PipelineFactory.createComputePipeline] Shader compilation messages:`, info.messages);
+          } else {
+            console.log(`[PipelineFactory.createComputePipeline] Shader compiled successfully`);
+          }
+        }).catch(error => {
+          console.warn(`[PipelineFactory.createComputePipeline] Could not get compilation info:`, error);
+        });
+      } else {
+        console.log(`[PipelineFactory.createComputePipeline] compilationInfo not available, skipping validation`);
+      }
       
       console.log(`[PipelineFactory.createComputePipeline] Setting up pipeline descriptor...`);
       const pipelineDescriptor = {
@@ -103,14 +108,20 @@ export class PipelineFactory {
       console.log(`[PipelineFactory.createRenderPipeline] Creating render pipeline...`);
       const pipeline = device.createRenderPipeline(pipelineDescriptor);
       
-      // Check for pipeline compilation errors
-      pipeline.compilationInfo?.()?.then((info) => {
-        if (info.messages.length > 0) {
-          console.error(`[PipelineFactory.createRenderPipeline] Pipeline compilation messages:`, info.messages);
-        } else {
-          console.log(`[PipelineFactory.createRenderPipeline] Render pipeline compiled successfully`);
-        }
-      });
+      // FIX: Same issue here - check if compilationInfo exists
+      if (pipeline.compilationInfo) {
+        pipeline.compilationInfo().then((info) => {
+          if (info.messages.length > 0) {
+            console.error(`[PipelineFactory.createRenderPipeline] Pipeline compilation messages:`, info.messages);
+          } else {
+            console.log(`[PipelineFactory.createRenderPipeline] Render pipeline compiled successfully`);
+          }
+        }).catch(error => {
+          console.warn(`[PipelineFactory.createRenderPipeline] Could not get compilation info:`, error);
+        });
+      } else {
+        console.log(`[PipelineFactory.createRenderPipeline] compilationInfo not available, skipping validation`);
+      }
       
       console.log(`[PipelineFactory.createRenderPipeline] Render pipeline created successfully`);
       return pipeline;
