@@ -185,10 +185,13 @@ export class SimulationView {
 
   async renderFrame(frameCount) {
     console.log(`[SimulationView.renderFrame] Rendering frame ${frameCount}`);
-    console.log(`[SimulationView.renderFrame] Render pipeline:`, this.renderPipeline);
     
+    const pipeline = await this.renderPipeline;
+
+    console.log(`[SimulationView.renderFrame] Render pipeline:`, pipeline);
+      
     // Critical check: skip rendering if pipeline is invalid - MUST BE FIRST!
-    if (!this.renderPipeline) {
+    if (!pipeline) {
       console.error(`[SimulationView.renderFrame] CRITICAL: Render pipeline is null/undefined! Skipping frame.`);
       return;
     }
@@ -224,8 +227,6 @@ export class SimulationView {
           clearValue: [0.1, 0.2, 0.3, 1], // Clear to blue-ish for visibility
         }],
       });
-      
-      const pipeline = await this.renderPipeline;
 
       console.log(`[SimulationView.renderFrame] Setting render pipeline...`);
       renderPass.setPipeline(pipeline); // This is line 229 where the error occurs
