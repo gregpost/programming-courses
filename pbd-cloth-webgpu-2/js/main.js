@@ -1,83 +1,88 @@
-async function main() {
-  // 1. Проверка поддержки WebGPU и инициализация устройства
-  if (!navigator.gpu) {
-    throw new Error("WebGPU не поддерживается в этом браузере.");
+/* main.js
+   Инициализация всей симуляции ткани через WebGPU
+   Подгружает WGSL-шейдеры через fetch
+   Использует GPUManager, PipelineFactory, стратегии и MVC
+   Author: Grigoriy Postolskiy
+   Date: 2025
+*/
+
+import { GPUManager } from "./gpuManager.js";
+import { PBDStrategy, MassSpringStrategy } from "./strategies.js";
+import { SimulationModel } from "./simulationModel.js";
+import { SimulationView } from "./simulationView.js";
+import { SimulationController } from "./simulationController.js";
+
+// Функция для загрузки WGSL-шейдера через fetch
+async function loadShader(path) {
+  console.log(`[loadShader] Loading shader from path: ${path}`);
+  const res = await fetch(path);
+  if (!res.ok) {
+    console.error(`[loadShader] Failed to load shader: ${path}`);
+    throw new Error(`Failed to load shader: ${path}`);
   }
-
-  // Запрашиваем адаптер и логическое устройство
-  const adapter = await navigator.gpu.requestAdapter();
-  if (!adapter) {
-    throw new Error("Не удалось получить адаптер WebGPU.");
-  }
-  const device = await adapter.requestDevice();
-
-  // 2. Конфигурация канваса
-  const canvas = document.querySelector('canvas');
-  const context = canvas.getContext('webgpu');
-  const presentationFormat = navigator.gpu.getPreferredCanvasFormat();
-  context.configure({
-    device,
-    format: presentationFormat,
-  });
-
-  // 3. Создание шейдерного модуля на WGSL
-  const module = device.createShaderModule({
-    label: 'Наши шейдеры для красного треугольника',
-    code: /* wgsl */ `
-      @vertex fn vs(
-        @builtin(vertex_index) vertexIndex : u32
-      ) -> @builtin(position) vec4f {
-        // Позиции вершин треугольника в clip space
-        let pos = array(
-          vec2f( 0.0,  0.5),  // верхняя середина
-          vec2f(-0.5, -0.5),  // нижний левый угол
-          vec2f( 0.5, -0.5)   // нижний правый угол
-        );
-        return vec4f(pos[vertexIndex], 0.0, 1.0);
-      }
-
-      @fragment fn fs() -> @location(0) vec4f {
-        // Возвращаем красный цвет (R=1.0, G=0.0, B=0.0, A=1.0)
-        return vec4f(1.0, 0.0, 0.0, 1.0);
-      }
-    `,
-  });
-
-  // 4. Создание конвейера рендеринга
-  const pipeline = device.createRenderPipeline({
-    label: 'Простой конвейер рендеринга',
-    layout: 'auto',
-    vertex: {
-      module,
-      entryPoint: 'vs',
-    },
-    fragment: {
-      module,
-      entryPoint: 'fs',
-      targets: [{ format: presentationFormat }],
-    },
-  });
-
-  // 5. Кодирование команд и отрисовка
-  const encoder = device.createCommandEncoder();
-  const pass = encoder.beginRenderPass({
-    colorAttachments: [
-      {
-        view: context.getCurrentTexture().createView(),
-        loadOp: 'clear',
-        storeOp: 'store',
-      },
-    ],
-  });
-
-  pass.setPipeline(pipeline);
-  pass.draw(3); // Рисуем 3 вершины
-  pass.end();
-
-  // Завершаем кодирование и отправляем буфер команд в очередь
-  const commandBuffer = encoder.finish();
-  device.queue.submit([commandBuffer]);
+  const shader = await res.text();
+  console.log(`[loadShader] Successfully loaded shader: ${path}, length: ${shader.length} chars`);
+  return shader;
 }
 
-// Запускаем нашу асинхронную функцию
-main().catch((error) => console.error(error));
+export async function initSimulation(canvas, gravityEl, strategyEl) {
+  console.log(`[initSimulation] Starting simulation initialization`);
+  
+  if (!navigator.gpu) {
+    console.error("[initSimulation] WebGPU not supported");
+    alert("WebGPU не поддерживается");
+    throw new Error("WebGPU not supported");
+  }
+  
+  console.log("[initSimulation] WebGPU is supported");
+
+  // Загружаем шейдеры
+  console.log("[initSimulation] Loading shaders...");
+  const [clothUpdatePBD, clothUpdateMassSpring, clothRenderWGSL] = await Promise.all([
+    loadShader("./shaders/cloth_update_pbd.wgsl"),
+    loadShader("./shaders/cloth_update_massspring.wgsl"),
+    loadShader("./shaders/cloth_render.wgsl"),
+  ]);
+  console.log("[initSimulation] All shaders loaded successfully");
+
+  console.log("[initSimulation] Getting GPUManager instance");
+  const gpu = await GPUManager.getInstance(canvas);
+  console.log("[initSimulation] GPUManager instance obtained");
+
+  // Создаём стратегии с загруженными шейдерами
+  console.log("[initSimulation] Creating PBD strategy");
+  const pbdStrategy = new PBDStrategy(clothUpdatePBD);
+  console.log("[initSimulation] Creating MassSpring strategy");
+  const massSpringStrategy = new MassSpringStrategy(clothUpdateMassSpring);
+  console.log("[initSimulation] Strategies created");
+
+  console.log("[initSimulation] Creating SimulationModel");
+  const model = new SimulationModel(gpu.device, gpu.format, pbdStrategy);
+  console.log("[initSimulation] Creating SimulationView");
+  const view = new SimulationView(gpu.device, gpu.context, gpu.format, model, clothRenderWGSL);
+  console.log("[initSimulation] Creating SimulationController");
+  const controller = new SimulationController(model, view);
+  console.log("[initSimulation] MVC components created");
+
+  console.log("[initSimulation] Setting up event listeners");
+  gravityEl.addEventListener("change", () => {
+    console.log(`[initSimulation] Gravity checkbox changed: ${gravityEl.checked}`);
+    model.setGravity(gravityEl.checked);
+  });
+  
+  strategyEl.addEventListener("change", () => {
+    console.log(`[initSimulation] Strategy changed to: ${strategyEl.value}`);
+    if (strategyEl.value === "pbd") {
+      console.log("[initSimulation] Setting PBD strategy");
+      model.setStrategy(pbdStrategy);
+    } else {
+      console.log("[initSimulation] Setting MassSpring strategy");
+      model.setStrategy(massSpringStrategy);
+    }
+  });
+  console.log("[initSimulation] Event listeners set up");
+
+  console.log("[initSimulation] Starting controller");
+  await controller.start();
+  console.log("[initSimulation] Simulation initialization started");
+}
