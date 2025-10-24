@@ -17,7 +17,7 @@ export class SimulationController {
     console.log(`[SimulationController.constructor] SimulationController initialized with frameCount: ${this.frameCount}`);
   }
   
-  start() {
+  async start() {
     console.log(`[SimulationController.start] Starting animation loop`);
     console.log(`[SimulationController.start] Initial frameCount: ${this.frameCount}`);
     

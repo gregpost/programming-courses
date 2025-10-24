@@ -183,7 +183,7 @@ export class SimulationView {
     console.log(`[SimulationView.updateParams] Parameters updated successfully`);
   }
 
-  renderFrame(frameCount) {
+  async renderFrame(frameCount) {
     console.log(`[SimulationView.renderFrame] Rendering frame ${frameCount}`);
     console.log(`[SimulationView.renderFrame] Render pipeline:`, this.renderPipeline);
     
@@ -225,8 +225,10 @@ export class SimulationView {
         }],
       });
       
+      const pipeline = await renderPipeline;
+
       console.log(`[SimulationView.renderFrame] Setting render pipeline...`);
-      renderPass.setPipeline(this.renderPipeline); // This is line 229 where the error occurs
+      renderPass.setPipeline(pipeline); // This is line 229 where the error occurs
       
       console.log(`[SimulationView.renderFrame] Setting vertex buffer 0...`);
       renderPass.setVertexBuffer(0, this.posBuffers[0]);
