@@ -176,7 +176,7 @@ export class SimulationView {
     }
   }
 
-  updateParams(time = 0) {
+  async updateParams(time = 0) {
     console.log(`[SimulationView.updateParams] Updating parameters, time: ${time}`);
     console.log(`[SimulationView.updateParams] Gravity enabled: ${this.model.gravityEnabled}`);
     // обновление параметров
@@ -225,7 +225,7 @@ export class SimulationView {
         }],
       });
       
-      const pipeline = await renderPipeline;
+      const pipeline = await this.renderPipeline;
 
       console.log(`[SimulationView.renderFrame] Setting render pipeline...`);
       renderPass.setPipeline(pipeline); // This is line 229 where the error occurs
