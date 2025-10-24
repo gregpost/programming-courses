@@ -1,86 +1,69 @@
-<canvas></canvas>
-<script type="module">
-async function main() {
-  // 1. Проверка поддержки WebGPU и инициализация устройства
-  if (!navigator.gpu) {
-    throw new Error("WebGPU не поддерживается в этом браузере.");
-  }
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>WebGPU Cloth Simulation</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="ui">
+    <label><input type="checkbox" id="gravity" checked> Gravity</label>
+    <label>
+      Strategy:
+      <select id="strategy">
+        <option value="pbd">PBD</option>
+        <option value="massspring">Mass-Spring</option>
+      </select>
+    </label>
+  </div>
 
-  // Запрашиваем адаптер и логическое устройство
-  const adapter = await navigator.gpu.requestAdapter();
-  if (!adapter) {
-    throw new Error("Не удалось получить адаптер WebGPU.");
-  }
-  const device = await adapter.requestDevice();
+  <canvas id="canvas" width="640" height="480"></canvas>
 
-  // 2. Конфигурация канваса
-  const canvas = document.querySelector('canvas');
-  const context = canvas.getContext('webgpu');
-  const presentationFormat = navigator.gpu.getPreferredCanvasFormat();
-  context.configure({
-    device,
-    format: presentationFormat,
-  });
+  <!-- Контейнер для вывода JS ошибок -->
+  <div id="error-log" style="color:red; white-space: pre-wrap; font-family: monospace; margin-top:10px;"></div>
+  <button id="save-log" style="margin-top:5px;">Save JS Log</button>
 
-  // 3. Создание шейдерного модуля на WGSL
-  const module = device.createShaderModule({
-    label: 'Наши шейдеры для красного треугольника',
-    code: /* wgsl */ `
-      @vertex fn vs(
-        @builtin(vertex_index) vertexIndex : u32
-      ) -> @builtin(position) vec4f {
-        // Позиции вершин треугольника в clip space
-        let pos = array(
-          vec2f( 0.0,  0.5),  // верхняя середина
-          vec2f(-0.5, -0.5),  // нижний левый угол
-          vec2f( 0.5, -0.5)   // нижний правый угол
-        );
-        return vec4f(pos[vertexIndex], 0.0, 1.0);
-      }
+  <script type="module">
+    import { initSimulation } from "./js/main.js";
+    import { setupErrorHandler } from "./js/error_handler.js";
 
-      @fragment fn fs() -> @location(0) vec4f {
-        // Возвращаем красный цвет (R=1.0, G=0.0, B=0.0, A=1.0)
-        return vec4f(1.0, 0.0, 0.0, 1.0);
-      }
-    `,
-  });
+    window.addEventListener("DOMContentLoaded", () => {
+      const canvas = document.getElementById("canvas");
+      const gravityEl = document.getElementById("gravity");
+      const strategyEl = document.getElementById("strategy");
+      const errorLogEl = document.getElementById("error-log");
+      const saveLogBtn = document.getElementById("save-log");
 
-  // 4. Создание конвейера рендеринга
-  const pipeline = device.createRenderPipeline({
-    label: 'Простой конвейер рендеринга',
-    layout: 'auto',
-    vertex: {
-      module,
-      entryPoint: 'vs',
-    },
-    fragment: {
-      module,
-      entryPoint: 'fs',
-      targets: [{ format: presentationFormat }],
-    },
-  });
+      // Настройка глобального обработчика ошибок
+      setupErrorHandler("error-log");
 
-  // 5. Кодирование команд и отрисовка
-  const encoder = device.createCommandEncoder();
-  const pass = encoder.beginRenderPass({
-    colorAttachments: [
-      {
-        view: context.getCurrentTexture().createView(),
-        loadOp: 'clear',
-        storeOp: 'store',
-      },
-    ],
-  });
+      // Логирование глобальных JS ошибок
+      window.addEventListener("error", e => {
+        const msg = `Error: ${e.message} at ${e.filename}:${e.lineno}:${e.colno}`;
+        console.error(msg);
+        errorLogEl.textContent += msg + "\n";
+      });
 
-  pass.setPipeline(pipeline);
-  pass.draw(3); // Рисуем 3 вершины
-  pass.end();
+      window.addEventListener("unhandledrejection", e => {
+        const msg = `Unhandled Promise rejection: ${e.reason}`;
+        console.error(msg);
+        errorLogEl.textContent += msg + "\n";
+      });
 
-  // Завершаем кодирование и отправляем буфер команд в очередь
-  const commandBuffer = encoder.finish();
-  device.queue.submit([commandBuffer]);
-}
+      // Кнопка для сохранения лога в файл
+      saveLogBtn.addEventListener("click", () => {
+        const blob = new Blob([errorLogEl.textContent], {type: 'text/plain'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'js_errors.log';
+        a.click();
+        URL.revokeObjectURL(url);
+      });
 
-// Запускаем нашу асинхронную функцию
-main().catch((error) => console.error(error));
-</script>
+      // Инициализация симуляции
+      initSimulation(canvas, gravityEl, strategyEl);
+    });
+  </script>
+</body>
+</html>
