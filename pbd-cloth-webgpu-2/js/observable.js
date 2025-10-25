@@ -6,12 +6,28 @@
  * Применяет паттерн Observer.
  */
 export class Observable {
+  /**
+   * Конструктор создает новый экземпляр Observable с пустым списком слушателей
+   * Инициализирует внутренний объект listeners для хранения событий и их обработчиков
+   * Каждое событие будет храниться как ключ объекта с массивом callback-функций
+   * Логирует создание экземпляра для отладки системы событий
+   * Паттерн Observer позволяет реализовать слабую связь между компонентами системы
+   */
   constructor() { 
     console.log(`[Observable.constructor] Creating new Observable instance`);
     this.listeners = {}; 
     console.log(`[Observable.constructor] Observable initialized with empty listeners`);
   }
   
+  /**
+   * Метод on позволяет подписаться на конкретное событие с callback-функцией
+   * Создает новый массив слушателей для события, если он не существует
+   * Добавляет callback-функцию в массив слушателей указанного события
+   * Логирует процесс подписки для отслеживания связей между компонентами
+   * Поддерживает множественную подписку - несколько обработчиков на одно событие
+   * @param {string} event - Название события для подписки
+   * @param {Function} cb - Callback-функция, вызываемая при наступлении события
+   */
   on(event, cb) { 
     console.log(`[Observable.on] Adding listener for event: "${event}"`);
     if (!this.listeners[event]) {
@@ -22,6 +38,15 @@ export class Observable {
     console.log(`[Observable.on] Listener added for event: "${event}", total listeners: ${this.listeners[event].length}`);
   }
   
+  /**
+   * Метод emit инициирует событие и уведомляет всех подписанных слушателей
+   * Передает данные события каждому зарегистрированному callback-обработчику
+   * Обрабатывает случаи отсутствия слушателей с предупреждающим сообщением
+   * Обеспечивает безопасное выполнение callback-ов с обработкой исключений
+   * Логирует весь процесс уведомления для отладки потока событий в системе
+   * @param {string} event - Название события для инициации
+   * @param {*} data - Данные, передаваемые слушателям события
+   */
   emit(event, data) { 
     const listeners = this.listeners[event] || [];
     console.log(`[Observable.emit] Emitting event: "${event}" with data:`, data);
