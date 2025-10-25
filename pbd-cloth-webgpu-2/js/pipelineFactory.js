@@ -7,6 +7,16 @@
  */
 
 export class PipelineFactory {
+  /**
+   * Загружает WGSL-шейдер из файла и создает шейдерный модуль для WebGPU
+   * Выполняет асинхронный запрос через Fetch API для получения исходного кода шейдера
+   * Проверяет успешность HTTP-запроса и генерирует ошибку при неудачной загрузке
+   * Создает шейдерный модуль с помощью device.createShaderModule для использования в пайплайнах
+   * Логирует все этапы загрузки для отладки процесса инициализации графических ресурсов
+   * @param {GPUDevice} device - WebGPU устройство для создания шейдерного модуля
+   * @param {string} url - URL-адрес файла с WGSL-кодом шейдера
+   * @returns {Promise<GPUShaderModule>} Шейдерный модуль, готовый к использованию в пайплайнах
+   */
   static async loadShaderModule(device, url) {
     console.log(`[PipelineFactory.loadShaderModule] Loading shader module from: ${url}`);
     
@@ -27,6 +37,17 @@ export class PipelineFactory {
     return shaderModule;
   }
 
+  /**
+   * Создает вычислительный пайплайн для выполнения общих вычислений на GPU
+   * Компилирует переданный WGSL-код в шейдерный модуль с точкой входа "main"
+   * Настраивает автоматическую раскладку пайплайна с помощью layout: "auto"
+   * Проверяет компиляцию шейдера через getCompilationInfo для отлова синтаксических ошибок
+   * Обрабатывает возможные исключения при создании пайплайна с детальным логированием ошибок
+   * Используется для физических расчетов и других не-графических вычислений на GPU
+   * @param {GPUDevice} device - WebGPU устройство для создания пайплайна
+   * @param {string} shaderCode - Исходный код WGSL-шейдера для вычислений
+   * @returns {GPUComputePipeline} Готовый вычислительный пайплайн для отправки в очередь устройста
+   */
   static createComputePipeline(device, shaderCode) {
     console.log(`[PipelineFactory.createComputePipeline] Creating compute pipeline`);
     console.log(`[PipelineFactory.createComputePipeline] Shader code length: ${shaderCode?.length || 0}`);
@@ -73,6 +94,18 @@ export class PipelineFactory {
     }
   }
 
+  /**
+   * Создает рендер-пайплайн для визуализации 3D-графики через WebGPU
+   * Асинхронно загружает шейдеры из внешнего файла с помощью loadShaderModule
+   * Настраивает вершинный буфер с атрибутами позиции и дополнительными данными
+   * Конфигурирует формат вывода цвета в соответствии с форматом канваса
+   * Устанавливает топологию примитивов "triangle-list" для отрисовки треугольников
+   * Проверяет компиляцию пайплайна и обрабатывает возможные ошибки валидации
+   * Используется для рендеринга ткани и других графических объектов в симуляции
+   * @param {GPUDevice} device - WebGPU устройство для создания рендер-пайплайна
+   * @param {string} format - Формат цвета целевой текстуры (например, 'bgra8unorm')
+   * @returns {Promise<GPURenderPipeline>} Готовый рендер-пайплайн для использования в проходах отрисовки
+   */
   static async createRenderPipeline(device, format) {
     console.log(`[PipelineFactory.createRenderPipeline] Creating render pipeline with format: ${format}`);
     
