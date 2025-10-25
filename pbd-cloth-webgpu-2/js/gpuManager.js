@@ -8,6 +8,17 @@
 export class GPUManager {
   static instance;
   
+  /**
+   * Статический метод для получения единственного экземпляра GPUManager
+   * Реализует паттерн Singleton, гарантируя единственность экземпляра на протяжении жизни приложения
+   * При первом вызове инициализирует WebGPU: получает адаптер, устройство, контекст и формат
+   * При последующих вызовах возвращает существующий экземпляр, избегая повторной инициализации
+   * @param {HTMLCanvasElement} canvas - Canvas элемент для создания WebGPU контекста
+   * @returns {Promise<GPUManager>} Единственный экземпляр GPUManager
+   * @throws {Error} Если не удается получить адаптер, устройство или контекст WebGPU
+   * @example
+   * const gpuManager = await GPUManager.getInstance(canvasElement);
+   */
   static async getInstance(canvas) {
     console.log(`[GPUManager.getInstance] Requesting GPUManager instance`);
     
@@ -56,6 +67,15 @@ export class GPUManager {
     return GPUManager.instance;
   }
   
+  /**
+   * Приватный конструктор GPUManager, вызываемый только из getInstance()
+   * Инициализирует менеджер с готовыми WebGPU ресурсами: устройством, контекстом и форматом
+   * Сохраняет ссылки на ключевые объекты WebGPU для последующего использования в приложении
+   * Логирует процесс инициализации для отладки создания графического контекста
+   * @param {GPUDevice} device - WebGPU устройство, полученное от адаптера
+   * @param {GPUCanvasContext} context - Контекст canvas, настроенный для WebGPU рендеринга
+   * @param {string} format - Формат текстуры, рекомендуемый для данного canvas и устройства
+   */
   constructor(device, context, format) {
     console.log(`[GPUManager.constructor] Initializing GPUManager with:`, {
       device: !!device,
